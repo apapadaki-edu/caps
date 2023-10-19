@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CapsON/OFF</title>
+    <meta charset="UTF-8">
+    <style>
+        .capsMsg {
+            color: #fff;
+            text-align: center;
+        }
+    </style>
+</head>
+    
+<body>
+    <h1 class="capsMsg">Caps</h1>
+</body>
+
+<script>
+ window.addEventListener('keyup', (e)=>{
+    
+    if(e.getModifierState('CapsLock')) {
+        document.querySelector(".capsMsg").textContent = "caps ON";
+        document.body.style.backgroundColor = "#008000";
+    } else {
+        document.querySelector(".capsMsg").textContent = "caps OFF";
+        document.body.style.backgroundColor = "red"
+    }
+    });
+
+</script>
+</html>
