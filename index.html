@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        * {
+            font-size: 18px;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+        table, th, td{
+            border: 1px solid rgb(119, 117, 117);
+            border-collapse: collapse;
+            
+        }
+        th, td {
+            padding: 10px;
+            font-size: 18px
+        }
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .headings-new td,
+        .program-new th {
+            background-color: rgb(5, 181, 5);
+        }
+        .headings-cur td,
+        .program-cur th {
+            background-color: rgb(181, 155, 5);
+        }
+        body {
+            width: 100%;
+            display:grid;
+            grid-template-areas: "program katalogos"
+                "options paroxes";
+            grid-template-columns: 1fr 3fr;
+            row-gap: 40px;
+            margin: 3vw;
+        }
+        .select-container{
+            grid-area: program;
+            
+        }
+        #current-program {
+            width: 80%;
+            padding:5px;
+        }
+        .contract-field{
+            grid-area: options;
+            padding:0;
+        }
+        .radio-group{
+            display: flex; 
+            flex-direction: row;
+            column-gap:4px;
+            padding-bottom: 25px;
+            justify-content: flex-start;
+        }
+        .paroxes {
+            grid-area: paroxes;
+        }
+        .katalogos-price {
+            grid-area: katalogos
+        }
+        </style>
+    </head>
+<body>
+
+<div class="select-container">
+    <label for="current-program"></label>
+    <select name="current-program" id="current-program">
+    <option value="select" selected>Select</option>
+    <option value="dp24-l">DP24-L</option>
+    <option value="dp24-xl">DP24-XL</option>
+    <option value="dp50-l">DP50-L</option>
+    <option value="dp100-l">DP100-L</option>
+    </select>
+</div>
+
+<!--checked-->
+<fieldset class="contract-field" style="border:0">
+    <div class="radio-group">
+        <label for="expired">Expired  </label><br>
+        <input type="radio" id="expired" name="contract" value="expired">
+    </div>
+    <div class="radio-group">
+        <label for="expiring">Expriring</label><br>
+        <input type="radio" id="expiring" name="contract" value="expiring">
+    </div>
+</fieldset>
+<div class="paroxes">
+    <table class="contents" style="width:max-content;">
+        <tbody> 
+            
+        </tbody>
+    </table>
+</div>
+
+<div class="katalogos-price">
+    <span>Κατάλογος: </span>
+    <span class="katalogos"></span>
+</div>
+
+</body>
+<script>
+window.addEventListener("load", ()=>{
+
+document.querySelectorAll('input[name="contract"]').forEach((target)=>{
+    console.log(target)
+    target.addEventListener("click", (e)=>{
+        document.querySelector("#current-program").disabled = false;
+        document.querySelector("#current-program").addEventListener("change",(ev)=>{
+            var options = ev.target.querySelectorAll("option")
+            options.forEach((opt)=>{
+                if(opt.selected){
+                    document.querySelector(".contents tbody").innerHTML = createTable(opt.value,e.target.value);    
+                }
+            })
+        
+            })           
+    });
+})
+
+document.querySelector("#current-program").addEventListener("change",(ev)=>{
+    var options = ev.target.querySelectorAll("option")
+    var selectPr = null;
+    options.forEach((opt)=>{
+        if(opt.selected){
+            selectPr = opt.value;
+        }
+    })
+    document.querySelectorAll('input[name="contract"]').forEach((target)=>{
+        target.addEventListener("click", (e)=>{
+            console.log(e.target)
+            if(e.target.checked){
+                console.log("checked")
+                console.log(e.target.value)
+                document.querySelector(".contents tbody").innerHTML = createTable(selectPr,e.target.value);    
+
+            }
+        });
+    })
+    })
+
+
+
+});
+
+function createTable(program, contract){
+let currentProgram = PRODUCTS[program];
+let currPar = currentProgram["current"];
+let newPar = currentProgram[contract];
+let tableContents = "";
+tableContents += `<tr class="program-new"><th colspan="5">${newPar["prNewName"]}</th></tr>`;
+tableContents += `<tr class="headings-new"><td>Internet</td><td>Σταθερά</td><td>Κινητά</td><td>Υπερ. 29Χ</td><td>Τιμή</td></tr>`;
+tableContents += `<tr><td>${newPar["internet"]}</td>,<td>${newPar["landline"]}</td><td>${newPar["mobile"]}</td><td>${(newPar["29X"]===null)?"-":newPar["29X"]}</td><td>${newPar["priceNew"]}</td></tr>`
+tableContents += `<tr class="headings"><td colspan="5">${(contract==="expiring")?"":"Billshock: <span  style=\"color:red\">" + newPar["billShock"]}</span></td></tr>`;
+
+tableContents += `<tr class="program-cur"><th colspan="5">${currPar["prNewName"]}</th></tr>`;
+tableContents += `<tr class="headings-cur"><td>Internet</td><td>Σταθερά</td><td>Κινητά</td><td>Υπερ. 29Χ</td><td>Τιμή</td></tr>`;
+tableContents += `<tr><td>${currPar["internet"]}</td>,<td>${currPar["landline"]}</td><td>${currPar["mobile"]}</td><td>${(newPar["29X"]===null)?"-":currPar["29X"]}</td><td>${currPar["priceNew"]}</td></tr>`
+
+
+document.querySelector(".katalogos").innerText = currPar["katalogos"];
+
+return tableContents;
+}
+const PRODUCTS = {
+"":{
+    current: {
+        prNewName: "",
+        internet: "",
+        landline: "unl",
+        mobile: "'",
+        "29X": "'",
+        priceNew: "0",
+        katalogos:"0.00"
+    },
+    expiring: {
+        prNewName:"",
+        internet:"    ",
+        landline:"",
+        mobile:"'",
+        "29X": "'",
+        priceNew:""
+    },
+    expired:{
+        prNewName:"",
+        billShock: 30.90, /*==shockprice when expired*/
+        internet:"",
+        landline:"",
+        mobile:"'",
+        "29X": "'",
+        priceNew:""
+    },
+
+},
+}
+
+
+</script>
+
+</html>
